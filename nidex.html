@@ -118,6 +118,7 @@
     <div class="window-clipper" id="scrollContainer">
         <div class="iframe-container-wrapper">
             
+            <!-- تم ضبط الخصائص هنا لتعمل بسلاسة حتى لو استُدعي الكود بأكمله داخل iframe خارجي -->
             <iframe 
                 id="siteFrame"
                 src="https://koray.live/"
@@ -138,7 +139,7 @@
             scrollContainer.scrollTop = 0;
         }
         
-        // المحافظة الصارمة على وزنية القص الذهبية السابقة بالمليمتر (مباراة السعودية كاملة والأخبار مختفية)
+        // المحافظة الصارمة على وزنية القص الذهبية السابقة بالمليمتر
         iframe.onload = function() {
             if (window.innerWidth < 768) {
                 iframe.style.height = (window.innerHeight * 2.05) + 80 + "px";
@@ -147,24 +148,18 @@
             }
         };
 
-        // كاسر الحواجز الأسطوري (The Global Window interceptor)
+        // كاسر الحواجز وعامل تصفية النوافذ (تعديل ليناسب البيئات المتداخلة)
         try {
             iframe.contentWindow.open = function(url, windowName, windowFeatures) {
+                // الفتح القسري بـ _blank يضمن الخروج من أي إطارات متداخلة متعددة المستويات
                 window.open(url, '_blank');
                 return null;
             };
         } catch (e) {}
 
-        // اعتراض الروابط العميقة التي تحاول تجميد الشاشة
-        window.addEventListener('blur', function() {
-            setTimeout(function() {
-                if (document.activeElement.tagName === 'IFRAME') {
-                    window.focus();
-                }
-            }, 50);
-        });
+        // تم حذف كود تجميد الـ blur القديم لمنع حدوث التجميد (Iframe Loop) 
+        // عند استدعاء هذا الرابط داخل تطبيقات أو مواقع أخرى.
     </script>
 
 </body>
 </html>
-
