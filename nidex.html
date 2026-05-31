@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق المباريات الخارق - كاسر الحماية</title>
+    <style>
+        /* تصفير كامل وملء الشاشة بالألوان الفخمة */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #0b0f17; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        /* البار العلوي الفخم والمدمج تماماً لإخفاء الشعار */
+        .premium-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 75px;
+            background: linear-gradient(135deg, #0b0f17 0%, #111622 100%);
+            border-bottom: 2px solid #1a2233;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* لتوزيع العناصر بشكل متناسق */
+            padding: 0 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+
+        /* زر العودة للرئيسية العائم الزجاجي */
+        .floating-back-btn {
+            background: linear-gradient(135deg, rgba(230, 30, 80, 0.45), rgba(219, 39, 119, 0.4));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #ffffff;
+            padding: 10px 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(230, 30, 80, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .floating-back-btn:hover {
+            background: linear-gradient(135deg, rgba(230, 30, 80, 0.65), rgba(219, 39, 119, 0.6));
+            transform: translateY(-2px);
+        }
+
+        /* الجملة النصية الثابتة بجانب الزر */
+        .static-server-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+            user-select: none; /* منع تحديد النص للمحافظة على المظهر المدمج */
+            pointer-events: none; /* تعطيل أي تفاعل أو نقرات تماماً */
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 14px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* الحاوية الرئيسية للتمرير اللمسي الحر */
+        .window-clipper {
+            position: absolute;
+            top: 75px; 
+            left: 0;
+            width: 100%;
+            height: calc(100% - 75px);
+            overflow-y: scroll;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; 
+        }
+        .window-clipper::-webkit-scrollbar {
+            display: none; 
+        }
+
+        /* غلاف الإطار الذي يسحب الشعار العلوي خارج مدى الرؤية */
+        .iframe-container-wrapper {
+            position: relative;
+            width: 100%;
+            margin-top: -155px; /* سحب الهيدر والشعار الأصلي خلف البار العلوي */
+            height: auto; 
+            min-height: 100%;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100vh; 
+            border: none;
+            background-color: #0b0f17;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="premium-header">
+        <button class="floating-back-btn" onclick="refreshApp()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            العودة للرئيسية
+        </button>
+
+        <span class="static-server-text">سيرفرات خاصة 🌚🌝</span>
+    </div>
+
+    <div class="window-clipper" id="scrollContainer">
+        <div class="iframe-container-wrapper">
+            
+            <iframe 
+                id="siteFrame"
+                src="https://koray.live/"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals"
+                scrolling="no">
+            </iframe>
+
+        </div>
+    </div>
+
+    <script>
+        const scrollContainer = document.getElementById('scrollContainer');
+        const iframe = document.getElementById('siteFrame');
+
+        // دالة العودة للرئيسية وإعادة التعيين الكامل
+        function refreshApp() {
+            iframe.src = "https://koray.live/";
+            scrollContainer.scrollTop = 0;
+        }
+        
+        // المحافظة الصارمة على وزنية القص الذهبية السابقة بالمليمتر (مباراة السعودية كاملة والأخبار مختفية)
+        iframe.onload = function() {
+            if (window.innerWidth < 768) {
+                iframe.style.height = (window.innerHeight * 2.05) + 80 + "px";
+            } else {
+                iframe.style.height = (window.innerHeight * 1.7) + 30 + "px";
+            }
+        };
+
+        // كاسر الحواجز الأسطوري (The Global Window interceptor)
+        try {
+            iframe.contentWindow.open = function(url, windowName, windowFeatures) {
+                window.open(url, '_blank');
+                return null;
+            };
+        } catch (e) {}
+
+        // اعتراض الروابط العميقة التي تحاول تجميد الشاشة
+        window.addEventListener('blur', function() {
+            setTimeout(function() {
+                if (document.activeElement.tagName === 'IFRAME') {
+                    window.focus();
+                }
+            }, 50);
+        });
+    </script>
+
+</body>
+</html>
+
