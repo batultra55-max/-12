@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stream Premium App</title>
     <style>
-        /* التصفير والتأسيس الداكن */
+        /* التصفير والتأسيس الداكن الصارم منعاً لأي تمرير خارجي */
         * {
             margin: 0;
             padding: 0;
@@ -18,27 +18,28 @@
             height: 100%;
             background-color: #0b0f17;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
+            overflow: hidden; /* قفل السكرول الخارجي نهائياً */
             color: #ffffff;
+            position: relative;
         }
 
-        /* حاوية الأقسام الرئيسية */
+        /* حاوية الأقسام الرئيسية الثابتة بمقاس الشاشة تماماً */
         .app-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: calc(100% - 55px); /* مساحة الشريط السفلي مصغرة لجعل الشاشة أكبر */
+            height: calc(100% - 55px); /* مساحة ثابتة ومحجوزة بدقة */
             overflow: hidden;
         }
 
-        /* شاشات الأقسام */
+        /* شاشات الأقسام الثابتة */
         .tab-content {
             display: none;
             width: 100%;
             height: 100%;
-            overflow-y: auto; 
-            scroll-behavior: smooth; /* تفعيل السكرول السلس جداً على مستوى النظام */
+            overflow-y: auto; /* السماح بالتمرير الداخلي فقط */
+            scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -46,16 +47,16 @@
             display: block;
         }
 
-        /* امتداد الـ iframe لمنع مشاكل الحجب الحماية */
+        /* امتداد الـ iframe الموزون والمستقر برمجياً */
         iframe {
             width: 100%;
-            height: 400vh; /* طول افتراضي ممتاز لعرض كافة تفاصيل جدول المباريات والبث */
+            height: 500vh; /* طول افتراضي ممتاز جداً لعرض كامل المحتوى الخارجي */
             border: none;
             background-color: #0b0f17;
             display: block;
         }
 
-        /* شارت التنقل السفلي المصغر */
+        /* شريط التنقل السفلي الثابت بقوة في قاع الشاشة */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -67,13 +68,13 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 99999;
+            z-index: 999999; /* أعلى طبقة لضمان الظهور دوماً */
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.7);
         }
 
-        /* أزرار الأقسام */
+        /* أزرار الأقسام المصغرة والأنيقة */
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -101,7 +102,7 @@
         }
 
         .nav-item.active {
-            color: #e50914; /* الهوية البصرية الحمراء لنتفليكس */
+            color: #e50914; /* الهوية الحمراء الفخمة */
             text-shadow: 0 0 8px rgba(229, 9, 20, 0.3);
         }
 
@@ -109,10 +110,10 @@
             stroke: #e50914;
         }
 
-        /* الأزرار العائمة الثابتة بنظام النقرة الفورية */
+        /* الأزرار العائمة الثابتة والمستقرة */
         .scroll-controls {
             position: fixed;
-            bottom: 75px; 
+            bottom: 75px; /* ثابتة فوق الشريط السفلي مباشرة */
             left: 20px;
             display: flex;
             flex-direction: column;
@@ -121,8 +122,8 @@
         }
 
         .scroll-btn {
-            width: 45px;
-            height: 45px;
+            width: 46px;
+            height: 46px;
             background-color: rgba(229, 9, 20, 0.95); 
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 50%;
@@ -172,10 +173,10 @@
     </div>
 
     <div class="scroll-controls">
-        <div class="scroll-btn" onclick="executeScroll(-180)" title="تمرير لأعلى">
+        <div class="scroll-btn" onclick="executeFastScroll(-450)" title="تمرير سريع لأعلى">
             <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
         </div>
-        <div class="scroll-btn" onclick="executeScroll(180)" title="تمرير لأسفل">
+        <div class="scroll-btn" onclick="executeFastScroll(450)" title="تمرير سريع لأسفل">
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
     </div>
@@ -202,7 +203,7 @@
     </div>
 
     <script>
-        // دالة التنقل بين الأقسام
+        // دالة التنقل الفوري بين الأقسام
         function switchTab(tabId, element) {
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.remove('active'));
@@ -214,15 +215,14 @@
             element.classList.add('active');
         }
 
-        // دالة التمرير الفوري والناعم بنقرة واحدة
-        function executeScroll(amount) {
-            // العثور على القسم النشط حالياً في الواجهة
+        // دالة التمرير الداخلي فائق السرعة والسلاسة بنقرة واحدة
+        function executeFastScroll(amount) {
             const activeTab = document.querySelector('.tab-content.active');
             
             if (activeTab) {
                 activeTab.scrollBy({
                     top: amount,
-                    behavior: 'smooth' /* هذه تجعل الحركة تنساب بنعومة فائقة جداً عند الضغط المفرّد */
+                    behavior: 'smooth' /* حركة ناعمة لكنها سريعة جداً بفضل القيمة الكبيرة 450 */
                 });
             }
         }
