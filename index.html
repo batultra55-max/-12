@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stream Premium App</title>
     <style>
-        /* التصفير والتأسيس الداكن الصارم منعاً لأي تمرير خارجي */
+        /* التصفير والتأسيس الداكن الصارم لمنع التمرير الخارجي */
         * {
             margin: 0;
             padding: 0;
@@ -18,18 +18,18 @@
             height: 100%;
             background-color: #0b0f17;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* قفل السكرول الخارجي نهائياً */
+            overflow: hidden; /* قفل السكرول الخارجي لثبات التطبيق */
             color: #ffffff;
             position: relative;
         }
 
-        /* حاوية الأقسام الرئيسية الثابتة بمقاس الشاشة تماماً */
+        /* حاوية الأقسام الرئيسية الثابتة */
         .app-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: calc(100% - 55px); /* مساحة ثابتة ومحجوزة بدقة */
+            height: calc(100% - 55px); /* مساحة ثابتة ومحجوزة للشريط السفلي */
             overflow: hidden;
         }
 
@@ -39,7 +39,6 @@
             width: 100%;
             height: 100%;
             overflow-y: auto; /* السماح بالتمرير الداخلي فقط */
-            scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -47,16 +46,16 @@
             display: block;
         }
 
-        /* امتداد الـ iframe الموزون والمستقر برمجياً */
+        /* امتداد الـ iframe لعرض كامل المحتوى الخارجي */
         iframe {
             width: 100%;
-            height: 500vh; /* طول افتراضي ممتاز جداً لعرض كامل المحتوى الخارجي */
+            height: 500vh; /* طول افتراضي كافٍ لجميع القنوات والمباريات */
             border: none;
             background-color: #0b0f17;
             display: block;
         }
 
-        /* شريط التنقل السفلي الثابت بقوة في قاع الشاشة */
+        /* شريط التنقل السفلي الثابت بقوة */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -68,13 +67,13 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 999999; /* أعلى طبقة لضمان الظهور دوماً */
+            z-index: 999999;
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.7);
         }
 
-        /* أزرار الأقسام المصغرة والأنيقة */
+        /* أزرار الأقسام المصغرة */
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -110,10 +109,10 @@
             stroke: #e50914;
         }
 
-        /* الأزرار العائمة الثابتة والمستقرة */
+        /* الأزرار العائمة المصممة للتحكم الدقيق */
         .scroll-controls {
             position: fixed;
-            bottom: 75px; /* ثابتة فوق الشريط السفلي مباشرة */
+            bottom: 75px; 
             left: 20px;
             display: flex;
             flex-direction: column;
@@ -173,10 +172,10 @@
     </div>
 
     <div class="scroll-controls">
-        <div class="scroll-btn" onclick="executeFastScroll(-450)" title="تمرير سريع لأعلى">
+        <div class="scroll-btn" onclick="executePreciseScroll(-120)" title="تمرير دقيق لأعلى">
             <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
         </div>
-        <div class="scroll-btn" onclick="executeFastScroll(450)" title="تمرير سريع لأسفل">
+        <div class="scroll-btn" onclick="executePreciseScroll(120)" title="تمرير دقيق لأسفل">
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
     </div>
@@ -203,7 +202,7 @@
     </div>
 
     <script>
-        // دالة التنقل الفوري بين الأقسام
+        // دالة التنقل بين الأقسام
         function switchTab(tabId, element) {
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.remove('active'));
@@ -215,14 +214,15 @@
             element.classList.add('active');
         }
 
-        // دالة التمرير الداخلي فائق السرعة والسلاسة بنقرة واحدة
-        function executeFastScroll(amount) {
+        // دالة التمرير الهادئ، الدقيق والسلس جداً بنقرة واحدة
+        function executePreciseScroll(amount) {
             const activeTab = document.querySelector('.tab-content.active');
             
             if (activeTab) {
+                // استخدام الخوارزمية الرياضية المدمجة في المتصفح للتمرير الانسيابي الموزون
                 activeTab.scrollBy({
                     top: amount,
-                    behavior: 'smooth' /* حركة ناعمة لكنها سريعة جداً بفضل القيمة الكبيرة 450 */
+                    behavior: 'smooth' 
                 });
             }
         }
