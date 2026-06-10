@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stream Premium App</title>
     <style>
-        /* التصفير والتأسيس الداكن الصارم لمنع التمرير الخارجي */
+        /* التصفير والتأسيس الداكن الصارم للشاشات والهواتف */
         * {
             margin: 0;
             padding: 0;
@@ -23,36 +23,38 @@
             position: relative;
         }
 
-        /* حاوية الأقسام الرئيسية الثابتة */
+        /* حاوية الأقسام الرئيسية الثابتة بمقاس الشاشة تماماً */
         .app-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: calc(100% - 55px); /* مساحة ثابتة ومحجوزة للشريط السفلي */
+            height: calc(100% - 55px); /* مساحة محجوزة بدقة للشريط السفلي */
             overflow: hidden;
         }
 
-        /* شاشات الأقسام الثابتة */
+        /* شاشات الأقسام الثابتة المتوافقة مع متصفحات التلفزيون */
         .tab-content {
             display: none;
             width: 100%;
             height: 100%;
-            overflow-y: auto; /* السماح بالتمرير الداخلي فقط */
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden; /* تم إلغاء السكرول من الحاوية الخارجية لحل مشكلة التوقف */
+            position: relative;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* امتداد الـ iframe لعرض كامل المحتوى الخارجي */
+        /* ضبط الـ iframe ليعمل بنظام السكرول الداخلي الذاتي (حل مشكلة عدم ظهور القنوات الأخيرة) */
         iframe {
             width: 100%;
-            height: 500vh; /* طول افتراضي كافٍ لجميع القنوات والمباريات */
+            height: 100%; /* ملء الحاوية تماماً دون زيادة افتراضية مشوهة */
             border: none;
             background-color: #0b0f17;
             display: block;
+            overflow-y: auto; /* السكرول الآن داخل الـ iframe مباشرة وهو المدعوم في التلفزيون */
+            padding-bottom: 60px; /* مساحة أمان سفلية لضمان ظهور آخر المجلدات والأسماء */
         }
 
         /* شريط التنقل السفلي الثابت بقوة */
@@ -67,13 +69,12 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 999999;
+            z-index: 99999;
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.7);
         }
 
-        /* أزرار الأقسام المصغرة */
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -101,7 +102,7 @@
         }
 
         .nav-item.active {
-            color: #e50914; /* الهوية الحمراء الفخمة */
+            color: #e50914;
             text-shadow: 0 0 8px rgba(229, 9, 20, 0.3);
         }
 
@@ -109,7 +110,37 @@
             stroke: #e50914;
         }
 
-        /* الأزرار العائمة المصممة للتحكم الدقيق */
+        /* زر تكبير الشاشة الفخم في الأعلى */
+        .fullscreen-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(6, 9, 14, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 1000000;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+        }
+
+        .fullscreen-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        /* الأزرار العائمة للتمرير الدقيق والمعدلة للتلفزيون */
         .scroll-controls {
             position: fixed;
             bottom: 75px; 
@@ -117,7 +148,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            z-index: 999999;
+            z-index: 99999;
         }
 
         .scroll-btn {
@@ -133,17 +164,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             cursor: pointer;
             user-select: none;
-            -webkit-user-select: none;
             transition: all 0.2s ease;
-        }
-
-        .scroll-btn:hover {
-            background-color: #ff121c;
-        }
-
-        .scroll-btn:active {
-            transform: scale(0.85);
-            background-color: #b90710;
         }
 
         .scroll-btn svg {
@@ -152,31 +173,161 @@
             fill: none;
             stroke: currentColor;
             stroke-width: 3;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+        }
+
+        /* القائمة المنبثقة المخصصة الفخمة */
+        .custom-menu {
+            position: fixed;
+            display: none;
+            background-color: #121824;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            z-index: 2000000;
+            padding: 6px 0;
+            min-width: 160px;
+            backdrop-filter: blur(10px);
+        }
+
+        .custom-menu-item {
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .custom-menu-item:hover {
+            background-color: #e50914;
+        }
+
+        /* نافذة العرض المنبثقة العائمة */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 3000000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .popup-box {
+            width: 90%;
+            height: 80%;
+            max-width: 800px;
+            background-color: #0b0f17;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
+            animation: popupShow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes popupShow {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-header {
+            height: 45px;
+            background-color: #121824;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .popup-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #7e8ba2;
+        }
+
+        .popup-close {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-close:hover {
+            color: #e50914;
+        }
+
+        .popup-body {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .popup-body iframe {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 <body>
 
+    <div class="fullscreen-btn" onclick="toggleFullscreen()" id="fs-btn" title="تغيير حجم الشاشة">
+        <svg viewBox="0 0 24 24" id="fs-icon">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
     <div class="app-container">
         
-        <div id="matches-tab" class="tab-content active">
-            <iframe src="https://batultra55-max.github.io/matches-/"></iframe>
+        <div id="matches-tab" class="tab-content active" oncontextmenu="handleRightClick(event)">
+            <iframe id="iframe-matches" src="https://batultra55-max.github.io/matches-/"></iframe>
         </div>
 
         <div id="backup-tab" class="tab-content">
-            <iframe src="https://batultra55-max.github.io/Tod-y/"></iframe>
+            <iframe id="iframe-backup" src="https://batultra55-max.github.io/Tod-y/"></iframe>
         </div>
 
     </div>
 
     <div class="scroll-controls">
-        <div class="scroll-btn" onclick="executePreciseScroll(-120)" title="تمرير دقيق لأعلى">
+        <div class="scroll-btn" onclick="executePreciseScroll(-120)">
             <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
         </div>
-        <div class="scroll-btn" onclick="executePreciseScroll(120)" title="تمرير دقيق لأسفل">
+        <div class="scroll-btn" onclick="executePreciseScroll(120)">
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+    </div>
+
+    <div class="custom-menu" id="context-menu">
+        <div class="custom-menu-item" onclick="openMatchInPopup()">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            فتح في نافذة منبثقة
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="match-popup">
+        <div class="popup-box">
+            <div class="popup-header">
+                <span class="popup-title">شاشة العرض المنبثقة الذكية</span>
+                <button class="popup-close" onclick="closePopup()">✕</button>
+            </div>
+            <div class="popup-body">
+                <iframe id="popup-iframe" src=""></iframe>
+            </div>
         </div>
     </div>
 
@@ -202,7 +353,6 @@
     </div>
 
     <script>
-        // دالة التنقل بين الأقسام
         function switchTab(tabId, element) {
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.remove('active'));
@@ -212,19 +362,86 @@
 
             document.getElementById(tabId).classList.add('active');
             element.classList.add('active');
+            closePopup();
         }
 
-        // دالة التمرير الهادئ، الدقيق والسلس جداً بنقرة واحدة
+        // دالة التمرير الدقيق والمحدثة للتلفزيون (تقوم بتحريك الـ iframe نفسه لضمان الوصول للنهاية)
         function executePreciseScroll(amount) {
             const activeTab = document.querySelector('.tab-content.active');
-            
             if (activeTab) {
-                // استخدام الخوارزمية الرياضية المدمجة في المتصفح للتمرير الانسيابي الموزون
-                activeTab.scrollBy({
-                    top: amount,
-                    behavior: 'smooth' 
-                });
+                // العثور على الـ iframe الموجود داخل القسم النشط حالياً
+                const iframe = activeTab.querySelector('iframe');
+                if (iframe) {
+                    // السكرول الآن يتم مباشرة على محتوى الـ iframe المتناسق مع الشاشات والتلفزيون
+                    try {
+                        iframe.contentWindow.scrollBy({ top: amount, behavior: 'smooth' });
+                    } catch (e) {
+                        // حل احتياطي في حال حظر المتصفح للتمرير المباشر
+                        activeTab.scrollBy({ top: amount, behavior: 'smooth' });
+                    }
+                }
             }
+        }
+
+        // محرك ملء الشاشة
+        function toggleFullscreen() {
+            const doc = window.document;
+            const docEl = doc.documentElement;
+            const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+            const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+            const fsIcon = document.getElementById('fs-icon');
+
+            if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+                if (requestFullScreen) {
+                    requestFullScreen.call(docEl);
+                    fsIcon.innerHTML = '<path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4" stroke-linecap="round" stroke-linejoin="round"/>';
+                }
+            } else {
+                if (cancelFullScreen) {
+                    cancelFullScreen.call(doc);
+                    fsIcon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" stroke-linecap="round" stroke-linejoin="round"/>';
+                }
+            }
+        }
+
+        // نظام إدارة القائمة المنبثقة
+        const contextMenu = document.getElementById('context-menu');
+        const matchPopup = document.getElementById('match-popup');
+        const popupIframe = document.getElementById('popup-iframe');
+        let touchTimeout;
+
+        function handleRightClick(e) {
+            e.preventDefault();
+            showMenu(e.clientX, e.clientY);
+        }
+
+        const matchesTab = document.getElementById('matches-tab');
+        matchesTab.addEventListener('touchstart', function(e) {
+            touchTimeout = setTimeout(function() {
+                const touch = e.touches[0];
+                showMenu(touch.clientX, touch.clientY);
+            }, 600);
+        }, { passive: true });
+
+        matchesTab.addEventListener('touchend', function() { clearTimeout(touchTimeout); });
+        matchesTab.addEventListener('touchmove', function() { clearTimeout(touchTimeout); });
+
+        function showMenu(x, y) {
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            contextMenu.style.display = 'block';
+        }
+
+        document.addEventListener('click', function() { contextMenu.style.display = 'none'; });
+
+        function openMatchInPopup() {
+            popupIframe.src = "https://batultra55-max.github.io/matches-/";
+            matchPopup.style.display = 'flex';
+        }
+
+        function closePopup() {
+            matchPopup.style.display = 'none';
+            popupIframe.src = "";
         }
     </script>
 
