@@ -18,14 +18,14 @@
             height: 100%;
             background-color: #120924; /* خلفية بنفسجية داكنة جداً وفخمة */
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* قفل السكرول الخارجي لثبات التطبيق */
+            overflow: hidden; /* قفل السكرول الخارجي نهائياً لثبات التطبيق والشريط العلوي */
             color: #ffffff;
             position: relative;
         }
 
-        /* شريط التنقل العلوي الثابت بقوة - مزيج بنفسجي وذهبي مشع */
+        /* شريط التنقل العلوي - ثابت ومؤمن بأعلى طبقة حماية برمجية */
         .top-nav {
-            position: fixed;
+            position: fixed; /* تثبيت مطلق في أعلى الشاشة */
             top: 0;
             left: 0;
             width: 100%;
@@ -35,7 +35,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 99999;
+            z-index: 9999999; /* قيمة فائقة الارتفاع لضمان بقائه فوق كل شيء مهما حدث */
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
@@ -80,22 +80,22 @@
             transform: scale(1.05);
         }
 
-        /* حاوية الأقسام الرئيسية الثابتة - تبدأ من أسفل الشريط العلوي */
+        /* حاوية الأقسام الرئيسية الثابتة - معزولة كلياً تحت الشريط العلوي */
         .app-container {
             position: absolute;
-            top: 55px; /* نفس ارتفاع الشريط العلوي منعاً للتداخل */
+            top: 55px; /* تبدأ بدقة من تحت الشريط العلوي لكي لا تحجبه */
             left: 0;
             width: 100%;
             height: calc(100% - 55px); 
             overflow: hidden;
         }
 
-        /* شاشات الأقسام الثابتة المتوافقة مع متصفحات التلفزيون والهواتف */
+        /* شاشات الأقسام الثابتة المستقلة في التمرير */
         .tab-content {
             display: none;
             width: 100%;
             height: 100%;
-            overflow-y: auto; /* تفعيل السكرول هنا ليعمل مع الأزرار العائمة */
+            overflow-y: auto; /* التمرير الداخلي منفصل تماماً ولا يؤثر على الشريط العلوي */
             -webkit-overflow-scrolling: touch;
             position: relative;
         }
@@ -107,7 +107,7 @@
         /* ضبط الـ iframe ليتمدد بالكامل داخل الحاوية القابلة للتمرير */
         iframe {
             width: 100%;
-            height: 4000px; /* ارتفاع افتراضي كبير ومناسب لتفعيل السكرول على التلفزيون */
+            height: 4000px; /* ارتفاع كافٍ لتفعيل التمرير الداخلي الآمن */
             border: none;
             background-color: #120924;
             display: block;
@@ -117,7 +117,7 @@
         /* الأزرار العائمة للتمرير الدقيق - ذهبية مشعة مذهلة */
         .scroll-controls {
             position: fixed;
-            bottom: 30px; /* خفض مسافة الأزرار قليلاً لتعطي شكلاً أفضل بعد رفع الشريط */
+            bottom: 30px; 
             left: 20px;
             display: flex;
             flex-direction: column;
@@ -134,7 +134,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #120924; /* لون أيقونة داكن لتظهر بوضوح وسط الذهب */
+            color: #120924; 
             box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.2);
             cursor: pointer;
             user-select: none;
